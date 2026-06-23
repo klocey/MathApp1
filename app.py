@@ -82,6 +82,7 @@ def generate_problem():
 
 # --- INITIALIZE DASH APP ---
 app = dash.Dash(__name__)
+server = app.server
 
 # Base Main Layout
 app.layout = html.Div(id='main-bg-container', style={
