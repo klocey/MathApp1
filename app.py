@@ -84,58 +84,59 @@ def generate_problem():
 app = dash.Dash(__name__)
 server = app.server
 
-# Base Main Layout
+# Base Main Layout - Scaled down to prevent scrolling
 app.layout = html.Div(id='main-bg-container', style={
-    'fontFamily': '"Comic Sans MS", "Chalkboard SE", sans-serif', 'textAlign': 'center', 'padding': '30px',
-    'minHeight': '100vh', 'display': 'flex', 'flexDirection': 'column', 'justifyContent': 'center',
-    'backgroundSize': 'cover', 'backgroundPosition': 'center', 'transition': 'background-image 0.5s ease-in-out'
+    'fontFamily': '"Comic Sans MS", "Chalkboard SE", sans-serif', 'textAlign': 'center', 'padding': '15px',
+    'height': '100vh', 'boxSizing': 'border-box', 'display': 'flex', 'flexDirection': 'column', 'justifyContent': 'center',
+    'backgroundSize': 'cover', 'backgroundPosition': 'center', 'transition': 'background-image 0.5s ease-in-out',
+    'overflow': 'hidden' # Hard stop to prevent accidental scrollbars
 }, children=[
     
-    # Main Content Card
+    # Main Content Card - Made tighter and more compact
     html.Div(style={
-        'backgroundColor': 'rgba(255, 255, 255, 0.95)', 'maxWidth': '650px', 'margin': 'auto', 'borderRadius': '30px',
-        'padding': '40px', 'boxShadow': '0px 10px 25px rgba(0, 0, 0, 0.2)',
-        'border': '8px solid #AED6F1' 
+        'backgroundColor': 'rgba(255, 255, 255, 0.95)', 'maxWidth': '600px', 'width': '100%', 'margin': 'auto', 'borderRadius': '25px',
+        'padding': '20px 30px', 'boxShadow': '0px 8px 20px rgba(0, 0, 0, 0.2)',
+        'border': '6px solid #AED6F1', 'boxSizing': 'border-box'
     }, children=[
         
         html.H1("🌟 POWERPUFF MATH LAB! 🌟", style={
-            'color': '#FF69B4', 'fontSize': '36px', 'fontWeight': 'bold', 
-            'textShadow': '2px 2px #F1948A', 'marginBottom': '10px'
+            'color': '#FF69B4', 'fontSize': '28px', 'fontWeight': 'bold', 
+            'textShadow': '2px 2px #F1948A', 'margin': '0 0 5px 0'
         }),
-        html.Div("Can you help save Townsville using math?", style={'color': '#5DADE2', 'fontSize': '18px', 'fontWeight': 'bold'}),
-        html.Hr(style={'border': '2px dashed #FFB6C1', 'margin': '25px 0'}),
+        html.Div("Can you help save Townsville using math?", style={'color': '#5DADE2', 'fontSize': '16px', 'fontWeight': 'bold'}),
+        html.Hr(style={'border': '1px dashed #FFB6C1', 'margin': '15px 0'}),
         
         # Persistent Banner for Previous Answer Feedback
         html.Div(id='last-action-feedback', style={
-            'fontSize': '20px', 'fontWeight': 'bold', 'minHeight': '40px', 'marginBottom': '15px'
+            'fontSize': '18px', 'fontWeight': 'bold', 'minHeight': '30px', 'marginBottom': '10px'
         }),
 
-        # Question Display Box
+        # Question Display Box - Tighter padding to save vertical space
         html.Div(id='question-box', style={
-            'fontSize': '24px', 'fontWeight': 'bold', 'margin': '20px 0', 
-            'minHeight': '80px', 'color': '#2C3E50', 'padding': '15px',
-            'backgroundColor': '#EAFAF1', 'borderRadius': '20px', 'border': '3px solid #2ECC71' 
+            'fontSize': '20px', 'fontWeight': 'bold', 'margin': '15px 0', 
+            'minHeight': '60px', 'color': '#2C3E50', 'padding': '12px',
+            'backgroundColor': '#EAFAF1', 'borderRadius': '15px', 'border': '3px solid #2ECC71' 
         }),
         
         # Input & Single-Button Interface
         html.Div([
             dcc.Input(id='user-answer', type='number', placeholder='?', style={
-                'fontSize': '32px', 'width': '140px', 'textAlign': 'center', 
-                'borderRadius': '15px', 'border': '4px solid #FFB6C1', 'padding': '10px',
+                'fontSize': '26px', 'width': '110px', 'textAlign': 'center', 
+                'borderRadius': '12px', 'border': '3px solid #FFB6C1', 'padding': '6px',
                 'color': '#FF69B4', 'fontWeight': 'bold'
             }),
             html.Br(), html.Br(),
             html.Button('💥 Check Answer!', id='submit-btn', n_clicks=0, n_clicks_timestamp=0, style={
-                'fontSize': '22px', 'backgroundColor': '#FF69B4', 'color': 'white', 
-                'border': 'none', 'padding': '15px 35px', 'borderRadius': '50px', 'cursor': 'pointer',
-                'fontWeight': 'bold', 'boxShadow': '0px 5px 0px #D81B60'
+                'fontSize': '18px', 'backgroundColor': '#FF69B4', 'color': 'white', 
+                'border': 'none', 'padding': '12px 30px', 'borderRadius': '50px', 'cursor': 'pointer',
+                'fontWeight': 'bold', 'boxShadow': '0px 4px 0px #D81B60'
             }),
         ]),
         
-        # Score Tracker Footer (Records Badges and % Correct)
+        # Score Tracker Footer
         html.Div(id='score-box', style={
-            'fontSize': '22px', 'fontWeight': 'bold', 'marginTop': '30px', 
-            'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '15px', 'borderRadius': '15px'
+            'fontSize': '18px', 'fontWeight': 'bold', 'marginTop': '20px', 
+            'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '10px', 'borderRadius': '12px'
         }),
     ]),
     
