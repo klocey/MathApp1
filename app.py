@@ -676,7 +676,10 @@ app.layout = html.Div(id='main-bg-container', style={
             value='Powerpuff Girls',
             clearable=False,
             style={'fontFamily': "Comic Sans MS", 
-                   'fontWeight': 'bold'}
+                   'fontWeight': 'bold',
+                   'width': '18vw', 
+                   'height': '6vh',
+                   }
         ),
         html.Div(style={'flexGrow': '1'}),
         #html.Small("Change themes anytime to swap questions and colors!", style={'color': '#7F8C8D', 'textAlign': 'center'})
@@ -852,7 +855,7 @@ def run_themed_game(submit_clicks, active_theme, user_ans, current_correct, scor
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)
     
     
     
