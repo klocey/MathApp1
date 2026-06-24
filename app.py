@@ -669,7 +669,10 @@ app.layout = html.Div(id='main-bg-container', style={
         'border': '4px solid #ced9e4', 
         'boxSizing': 'border-box',
     }, children=[
-        html.H3("😄 Choose A Theme", style={'color': '#2C3E50', 'marginTop': '0', 'textAlign': 'center'}),
+        html.H3("😄 Choose A Theme", style={'color': '#2C3E50', 
+                                           'marginTop': '0', 
+                                           'marginBottom': '0', 
+                                           'textAlign': 'center'}),
         dcc.Dropdown(
             id='theme-selector',
             options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
@@ -678,11 +681,10 @@ app.layout = html.Div(id='main-bg-container', style={
             style={'fontFamily': "Comic Sans MS", 
                    'fontWeight': 'bold',
                    'width': '18vw', 
-                   'height': '6vh',
+                   'height': 'vh',
                    }
         ),
         html.Div(style={'flexGrow': '1'}),
-        #html.Small("Change themes anytime to swap questions and colors!", style={'color': '#7F8C8D', 'textAlign': 'center'})
     ]),
     
     # Central Testing Dashboard Card
@@ -855,7 +857,7 @@ def run_themed_game(submit_clicks, active_theme, user_ans, current_correct, scor
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', debug=True)
     
     
     
