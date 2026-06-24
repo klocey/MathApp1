@@ -671,7 +671,7 @@ app.layout = html.Div(id='main-bg-container', style={
     }, children=[
         html.H3("😄 Choose A Theme", style={'color': '#2C3E50', 
                                            'marginTop': '0', 
-                                           'marginBottom': '0', 
+                                           'marginBottom': '2vh', 
                                            'textAlign': 'center'}),
         dcc.Dropdown(
             id='theme-selector',
@@ -681,7 +681,7 @@ app.layout = html.Div(id='main-bg-container', style={
             style={'fontFamily': "Comic Sans MS", 
                    'fontWeight': 'bold',
                    'width': '18vw', 
-                   'height': 'vh',
+                   'height': '6vh',
                    }
         ),
         html.Div(style={'flexGrow': '1'}),
