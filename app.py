@@ -287,4 +287,4 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)
