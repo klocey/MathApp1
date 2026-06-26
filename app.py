@@ -33,7 +33,7 @@ DAD_JOKES = load_dad_jokes()
 def generate_problem_by_theme(theme_name):
     cfg = THEME_DATA[theme_name]
     op = random.choice(["+", "-", "*", "/"])
-    is_word_problem = random.choice([True, False])
+    is_word_problem = random.choice([True, False, False, False])
     
     if op == "+":
         num1, num2 = random.randint(0, 50), random.randint(0, 50)
