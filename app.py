@@ -99,29 +99,42 @@ app.layout = html.Div(id='main-bg-container', style={
 
     # Left-Side Theme Control Panel
     html.Div(style={
-        'width': '20vw', 'height': '16vh',
-        'backgroundColor': 'rgba(255, 255, 255, 0.6)', 
+        'width': '100%',
+        'maxWidth': '280px',           
+        'minWidth': '200px',           
+        'height': 'fit-content',       
+        'backgroundColor': 'rgba(255, 255, 255, 0.75)', 
         'borderRadius': '20px',
-        'padding': '10px', 
-        'boxShadow': '5px 5px 15px rgba(0,0,0,0.1)', 
+        'padding': '20px',             
+        'boxShadow': '0px 8px 16px rgba(0,0,0,0.1)', 
         'display': 'flex', 
         'flexDirection': 'column', 
         'marginRight': '20px', 
         'border': '4px solid #ced9e4', 
         'boxSizing': 'border-box',
+        'marginBottom': '15px'         
     }, children=[
-        html.H3("😄 Choose A Theme", style={'color': '#2C3E50', 'marginTop': '0', 'marginBottom': '2vh', 'textAlign': 'center'}),
+        html.H3("😄 Choose A Theme", style={
+            'color': '#2C3E50', 
+            'marginTop': '0', 
+            'marginBottom': '15px', 
+            'fontSize': '20px',        
+            'textAlign': 'center'
+        }),
         dcc.Dropdown(
             id='theme-selector',
             options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
             value='Powerpuff Girls',
             clearable=False,
-            style={'fontFamily': "Comic Sans MS", 'fontWeight': 'bold', 'width': '18vw', 'height': '6vh'}
+            style={
+                'fontFamily': "Comic Sans MS", 
+                'fontWeight': 'bold', 
+                'width': '100%'        
+            }
         ),
-        html.Div(style={'flexGrow': '1'}),
     ]),
     
-    # Central Testing Dashboard Card
+    # Central Testing Dashboard Card (Leave the rest of this below as it was...)
     html.Div(id='central-game-card', style={
         'backgroundColor': 'rgba(255, 255, 255, 0.8)', 
         'width': '50vw', 
