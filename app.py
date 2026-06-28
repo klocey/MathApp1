@@ -73,14 +73,19 @@ def generate_problem_by_theme(theme_name):
 # ==========================================
 #              DASH LAYOUT
 # ==========================================
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Added mobile viewport meta tag for crisp scaling on smartphones
+app = dash.Dash(
+    __name__, 
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1.0"}]
+)
 server = app.server
 
 app.layout = html.Div(id='main-bg-container', style={
     'fontFamily': '"Comic Sans MS", "Chalkboard SE", sans-serif', 'padding': '15px',
-    'height': '100vh', 'boxSizing': 'border-box', 'display': 'flex', 'flexDirection': 'row',
+    'minHeight': '100vh', 'boxSizing': 'border-box', 'display': 'flex', 'flexDirection': 'column',
     'backgroundSize': 'cover', 'backgroundPosition': 'center', 'transition': 'background-image 0.5s ease-in-out',
-    'overflow': 'hidden', 'backgroundColor': '#FFF0F5'
+    'backgroundColor': '#FFF0F5', 'justifyContent': 'center', 'alignItems': 'center'
 }, children=[
     
     # Modal for Reward (Dad Joke / GIF Popup)
@@ -97,86 +102,84 @@ app.layout = html.Div(id='main-bg-container', style={
         ],
     ),
 
-    # Left-Side Theme Control Panel
-    html.Div(style={
-        'width': '100%',
-        'maxWidth': '280px',           
-        'minWidth': '200px',           
-        'height': 'fit-content',       
-        'backgroundColor': 'rgba(255, 255, 255, 0.75)', 
-        'borderRadius': '20px',
-        'padding': '20px',             
-        'boxShadow': '0px 8px 16px rgba(0,0,0,0.1)', 
-        'display': 'flex', 
-        'flexDirection': 'column', 
-        'marginRight': '20px', 
-        'border': '4px solid #ced9e4', 
-        'boxSizing': 'border-box',
-        'marginBottom': '15px'         
-    }, children=[
-        html.H3("😄 Choose A Theme", style={
-            'color': '#2C3E50', 
-            'marginTop': '0', 
-            'marginBottom': '15px', 
-            'fontSize': '20px',        
-            'textAlign': 'center'
-        }),
-        dcc.Dropdown(
-            id='theme-selector',
-            options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
-            value='Powerpuff Girls',
-            clearable=False,
-            style={
-                'fontFamily': "Comic Sans MS", 
-                'fontWeight': 'bold', 
-                'width': '100%'        
-            }
-        ),
-    ]),
-    
-    # Central Testing Dashboard Card (Leave the rest of this below as it was...)
-    html.Div(id='central-game-card', style={
-        'backgroundColor': 'rgba(255, 255, 255, 0.8)', 
-        'width': '50vw', 
-        'margin': 'auto', 
-        'borderRadius': '25px', 
-        'padding': '20px 30px', 
-        'boxShadow': '0px 8px 20px rgba(0, 0, 0, 0.2)',
-        'border': '6px solid #AED6F1', 'boxSizing': 'border-box', 'textAlign': 'center'
-    }, children=[
-        html.H1(id='app-title', children="🌟 LAB ROOM! 🌟", style={'color': '#FF69B4', 'fontSize': '28px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}),
-        html.Div(id='app-subtitle', children="Can you solve this challenge?", style={'color': '#5DADE2', 'fontSize': '20px', 'fontWeight': 'bold'}),
-        html.Hr(style={'border': '1px dashed #FFB6C1', 'margin': '15px 0'}),
+    # Responsively wrapping layout structures using Bootstrap containers
+    dbc.Container(style={'maxWidth': '700px', 'width': '100%', 'padding': '0'}, children=[
         
-        # Action Notification Area
-        html.Div(id='last-action-feedback', style={'fontSize': '18px', 'fontWeight': 'bold', 'minHeight': '30px', 'marginBottom': '10px'}),
-
-        # Target Word/Math Problem Box
-        html.Div(id='question-box', style={
-            'fontSize': '20px', 'fontWeight': 'bold', 'margin': '15px 0', 
-            'minHeight': '60px', 'color': '#2C3E50', 'padding': '12px',
-            'backgroundColor': '#EAFAF1', 'borderRadius': '15px', 'border': '3px solid #2ECC71' 
-        }),
-        
-        # User Interface Blocks
-        html.Div([
-            dcc.Input(id='user-answer', type='number', placeholder='?', style={
-                'fontSize': '26px', 'width': '110px', 'textAlign': 'center', 'borderRadius': '12px', 
-                'border': '3px solid #FFB6C1', 'padding': '6px', 'fontWeight': 'bold',
-                'display': 'inline-block', 'vertical-align': 'top', "margin-right": "1%",
+        # Upper/Left Theme Control Panel (Fluid width matching smartphone widths perfectly)
+        html.Div(style={
+            'width': '100%',         
+            'height': 'fit-content',       
+            'backgroundColor': 'rgba(255, 255, 255, 0.75)', 
+            'borderRadius': '20px',
+            'padding': '15px 20px',              
+            'boxShadow': '0px 8px 16px rgba(0,0,0,0.1)', 
+            'display': 'flex', 
+            'flexDirection': 'column', 
+            'border': '4px solid #ced9e4', 
+            'boxSizing': 'border-box',
+            'marginBottom': '15px'         
+        }, children=[
+            html.H3("😄 Choose A Theme", style={
+                'color': '#2C3E50', 
+                'marginTop': '0', 
+                'marginBottom': '10px', 
+                'fontSize': '18px',        
+                'textAlign': 'center'
             }),
-            html.Button('💥 Check Answer!', id='submit-btn', n_clicks=0, style={
-                'fontSize': '18px', 'color': 'white', 'border': 'none', 'padding': '12px 30px', 
-                'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold',
-                'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '1%',
-            }),
+            dcc.Dropdown(
+                id='theme-selector',
+                options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
+                value='Powerpuff Girls',
+                clearable=False,
+                style={
+                    'fontFamily': "Comic Sans MS", 
+                    'fontWeight': 'bold', 
+                    'width': '100%'        
+                }
+            ),
         ]),
         
-        # Score Tracking Metric Area
-        html.Div(id='score-box', style={
-            'fontSize': '18px', 'fontWeight': 'bold', 'marginTop': '20px', 
-            'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '10px', 'borderRadius': '12px'
-        }),
+        # Central Testing Dashboard Card
+        html.Div(id='central-game-card', style={
+            'backgroundColor': 'rgba(255, 255, 255, 0.8)', 
+            'width': '100%', 
+            'borderRadius': '25px', 
+            'padding': '20px 20px', 
+            'boxShadow': '0px 8px 20px rgba(0, 0, 0, 0.2)',
+            'border': '6px solid #AED6F1', 'boxSizing': 'border-box', 'textAlign': 'center'
+        }, children=[
+            html.H1(id='app-title', children="🌟 LAB ROOM! 🌟", style={'color': '#FF69B4', 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}),
+            html.Div(id='app-subtitle', children="Can you solve this challenge?", style={'color': '#5DADE2', 'fontSize': '18px', 'fontWeight': 'bold'}),
+            html.Hr(style={'border': '1px dashed #FFB6C1', 'margin': '15px 0'}),
+            
+            # Action Notification Area
+            html.Div(id='last-action-feedback', style={'fontSize': '16px', 'fontWeight': 'bold', 'minHeight': '30px', 'marginBottom': '10px'}),
+
+            # Target Word/Math Problem Box
+            html.Div(id='question-box', style={
+                'fontSize': '18px', 'fontWeight': 'bold', 'margin': '15px 0', 
+                'minHeight': '60px', 'color': '#2C3E50', 'padding': '12px',
+                'backgroundColor': '#EAFAF1', 'borderRadius': '15px', 'border': '3px solid #2ECC71' 
+            }),
+            
+            # User Interface Blocks wrapped flexibly to stack inputs on tiny phone panels gracefully
+            html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'gap': '10px'}, children=[
+                dcc.Input(id='user-answer', type='number', placeholder='?', style={
+                    'fontSize': '26px', 'width': '110px', 'textAlign': 'center', 'borderRadius': '12px', 
+                    'border': '3px solid #FFB6C1', 'padding': '6px', 'fontWeight': 'bold',
+                }),
+                html.Button('💥 Check Answer!', id='submit-btn', n_clicks=0, style={
+                    'fontSize': '18px', 'color': 'white', 'border': 'none', 'padding': '12px 25px', 
+                    'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold',
+                }),
+            ]),
+            
+            # Score Tracking Metric Area
+            html.Div(id='score-box', style={
+                'fontSize': '16px', 'fontWeight': 'bold', 'marginTop': '20px', 
+                'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '10px', 'borderRadius': '12px'
+            }),
+        ]),
     ]),
     
     # Store Engine Hooks
@@ -187,7 +190,7 @@ app.layout = html.Div(id='main-bg-container', style={
 ])
 
 # ==========================================
-#               APP LOGIC
+#                APP LOGIC
 # ==========================================
 @app.callback(
     Output('question-box', 'children'),
@@ -206,7 +209,7 @@ app.layout = html.Div(id='main-bg-container', style={
     Output('user-answer', 'style'),
     Output('joke-modal', 'is_open'),          
     Output('joke-modal-body', 'children'),    
-    Output('theme-audio-store', 'data'), # <-- ADDED THIS OUTPUT
+    Output('theme-audio-store', 'data'),
     Input('submit-btn', 'n_clicks'),
     Input('theme-selector', 'value'),
     Input('close-joke-btn', 'n_clicks'),      
@@ -225,7 +228,6 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
     ctx = callback_context
     cfg = THEME_DATA[active_theme]
     
-    # Extract audio mapping with fallback strings if missing
     theme_audio = cfg.get("audio", {"correct": "default_correct.mp3", "wrong": "default_wrong.mp3", "click": "default_click.mp3"})
     
     def format_score_text(s):
@@ -233,8 +235,8 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         return f"⭐ Badges: {s['correct']} / {s['total']} | Success Rate: {pct}% ⭐"
 
     title_text = f"🌟 {active_theme.upper()} MATH LAB! 🌟"
-    title_style = {'color': cfg['accent_color'], 'fontSize': '28px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}
-    subtitle_style = {'color': cfg['accent_color'], 'fontSize': '20px', 'fontWeight': 'bold'}
+    title_style = {'color': cfg['accent_color'], 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}
+    subtitle_style = {'color': cfg['accent_color'], 'fontSize': '18px', 'fontWeight': 'bold'}
     
     bg_style['backgroundColor'] = cfg['bg_color']
     card_style['border'] = f"6px solid {cfg['card_border']}"
@@ -243,8 +245,8 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
     
     new_btn_style = {
         'fontSize': '18px', 'backgroundColor': cfg['accent_color'], 'color': 'white', 'border': 'none', 
-        'padding': '12px 30px', 'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold', 
-        'boxShadow': f"0px 4px 0px {cfg['button_shadow']}", 'display': 'inline-block', 'margin-left': '1%', 'vertical-align': 'top',
+        'padding': '12px 25px', 'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold', 
+        'boxShadow': f"0px 4px 0px {cfg['button_shadow']}"
     }
 
     triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
@@ -276,9 +278,9 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         if reward_type == "joke":
             joke_setup, joke_punchline = random.choice(DAD_JOKES)
             reward_layout = html.Div([
-                html.P(f"👉 {joke_setup}", style={'fontWeight': 'bold', 'fontSize': '22px'}),
+                html.P(f"👉 {joke_setup}", style={'fontWeight': 'bold', 'fontSize': '20px'}),
                 html.Br(),
-                html.P(f"✨ {joke_punchline} ✨", style={'color': '#E74C3C', 'fontWeight': 'bold', 'fontSize': '24px'})
+                html.P(f"✨ {joke_punchline} ✨", style={'color': '#E74C3C', 'fontWeight': 'bold', 'fontSize': '22px'})
             ])
         else:
             chosen_gif = random.choice(cfg["gifs"])
@@ -286,7 +288,7 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
                 html.P("🎉 Virtual High Five! 🎉", style={'fontWeight': 'bold', 'marginBottom': '15px'}),
                 html.Img(
                     src=f"/assets/{chosen_gif}", 
-                    style={'maxWidth': '100%', 'maxHeight': '300px', 'borderRadius': '15px', 'boxShadow': '0px 4px 10px rgba(0,0,0,0.15)'}
+                    style={'maxWidth': '100%', 'maxHeight': '250px', 'borderRadius': '15px', 'boxShadow': '0px 4px 10px rgba(0,0,0,0.15)'}
                 )
             ])
     else:
@@ -299,8 +301,6 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
 
     return next_q, next_ans, feedback, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, is_correct, reward_layout, theme_audio
-
-
 
 
 # --- CLIENTSIDE AUDIO TRIGGER ---
@@ -351,7 +351,6 @@ app.clientside_callback(
     prevent_initial_call=True
 )
 
-            
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=False)
-    
+    app.run(host='0.0.0.0', port=8050, debug=False)
+
