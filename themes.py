@@ -9,14 +9,17 @@ THEME_DATA = {
         "items": ["potato chips", "Pringles", "cups of ramyeon", "kimbap", "hot dogs", "hotteok", 
                   "bowls of fishcake soup", "corn dogs", 
                   ],
+        "audio": {
+            "correct": "kpdh/correct.mp3",
+            "wrong": "kpdh/wrong.mp3",
+            "click": "kpdh/click.mp3"
+        },
         "images": [
             "kpdh/1.avif", "kpdh/2.webp",  "kpdh/3.webp",  "kpdh/4.webp", 
             "kpdh/5.jpg", "kpdh/6.webp",  "kpdh/7.jpg",  "kpdh/8.jpeg",
             "kpdh/9.jpg", "kpdh/10.jpeg", "kpdh/11.webp", "kpdh/12.webp", 
             "kpdh/13.webp", "kpdh/14.webp",  "kpdh/15.webp", "kpdh/16.jpg", 
             "kpdh/17.jpeg", "kpdh/18.webp", "kpdh/19.webp", "kpdh/20.jpg", 
-            
-            
         ],
         "gifs": [
             "kpdh/1.gif", "kpdh/2.gif", "kpdh/3.gif", "kpdh/4.gif",
@@ -145,6 +148,11 @@ THEME_DATA = {
         "question_border": "#2ECC71",# Buttercup Green
         "characters": ["Blossom", "Bubbles", "Buttercup", "Mojo Jojo", "Fuzzy Lumpkins", "Professor Utonium"],
         "items": ["Chemical X drops", "star stickers", "sweet cupcakes", "unbreakable hearts", "jars of jam"],
+        "audio": {
+            "correct": "powerpuff/correct.mp3",
+            "wrong": "powerpuff/wrong.mp3",
+            "click": "powerpuff/click.mp3"
+        },
         "images": [
             "powerpuff/1.jpg", "powerpuff/2.jpg", "powerpuff/3.jpg", "powerpuff/4.webp", 
             "powerpuff/5.jpg", "powerpuff/6.jpg", "powerpuff/7.jpg", "powerpuff/8.webp",
@@ -250,6 +258,11 @@ THEME_DATA = {
         "question_border": "#3498DB",# Great Ball Blue
         "characters": ["Pikachu", "Eevee", "Mew", "Ash Ketchum", "Charizard", "Snorlax"],
         "items": ["Pokéballs", "Razz Berries", "Gym Badges", "Shiny Stones", "Potions"],
+        "audio": {
+            "correct": "pokemon/correct.mp3",
+            "wrong": "pokemon/wrong.mp3",
+            "click": "pokemon/click.mp3"
+        },
         "images": [
             "pokemon/1.webp", "pokemon/2.webp", "pokemon/3.avif", "pokemon/4.webp", 
             "pokemon/5.webp", "pokemon/6.webp", "pokemon/7.jpg", "pokemon/8.jpg",
@@ -383,6 +396,11 @@ THEME_DATA = {
         "question_border": "#BB8FCE",# LSP Lumpy Purple
         "characters": ["Finn", "Jake", "Princess Bubblegum", "Marceline", "BMO", "Ice King"],
         "items": ["swords", "bacon pancakes", "Candy Kingdom gems", "ancient artifacts", "apples"],
+        "audio": {
+            "correct": "adventuretime/correct.mp3",
+            "wrong": "adventuretime/wrong.mp3",
+            "click": "adventuretime/click.mp3"
+        },
         "images": [
             "adventuretime/1.webp", "adventuretime/2.webp", "adventuretime/3.webp", "adventuretime/4.webp", 
             "adventuretime/5.jpg", "adventuretime/6.avif", "adventuretime/7.webp", "adventuretime/8.jpg",
@@ -515,6 +533,11 @@ THEME_DATA = {
         "question_border": "#9B59B6",# Donatello Purple
         "characters": ["Leo", "Raph", "Donnie", "Mikey", "Splinter", "Shredder"],
         "items": ["pizza slices", "ninja throwing stars", "skateboards", "mutagen canisters"],
+        "audio": {
+            "correct": "tmnt/correct.mp3",
+            "wrong": "tmnt/wrong.mp3",
+            "click": "tmnt/click.mp3"
+        },
         "images": [
             "tmnt/1.webp", "tmnt/2.jpeg", "tmnt/3.webp", "tmnt/4.jpg", 
             "tmnt/5.jpg", "tmnt/6.webp", "tmnt/7.jpeg", "tmnt/8.png"
@@ -647,6 +670,11 @@ THEME_DATA = {
         "question_border": "#E74C3C",# Optimus Prime Crimson Red
         "characters": ["Optimus Prime", "Bumblebee", "Megatron", "Starscream", "Grimlock"],
         "items": ["Energon cubes", "laser blasters", "Cybertronian gears", "space sparkplugs"],
+        "audio": {
+            "correct": "transformers/correct.mp3",
+            "wrong": "transformers/wrong.mp3",
+            "click": "transformers/click.mp3"
+        },
         "images": [
             "transformers/1.avif", "transformers/2.avif", "transformers/3.jpg", "transformers/4.avif", 
             "transformers/5.jpg", "transformers/6.jpg", "transformers/7.jpg", "transformers/8.jpg"

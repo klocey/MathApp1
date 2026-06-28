@@ -181,7 +181,9 @@ app.layout = html.Div(id='main-bg-container', style={
     
     # Store Engine Hooks
     dcc.Store(id='correct-answer'),
-    dcc.Store(id='score-tracker', data={'correct': 0, 'total': 0})
+    dcc.Store(id='score-tracker', data={'correct': 0, 'total': 0}),
+    dcc.Store(id='theme-audio-store', data={}),
+    html.Div(id='sound-effects-container', style={'display': 'none'}),
 ])
 
 # ==========================================
@@ -204,6 +206,7 @@ app.layout = html.Div(id='main-bg-container', style={
     Output('user-answer', 'style'),
     Output('joke-modal', 'is_open'),          
     Output('joke-modal-body', 'children'),    
+    Output('theme-audio-store', 'data'), # <-- ADDED THIS OUTPUT
     Input('submit-btn', 'n_clicks'),
     Input('theme-selector', 'value'),
     Input('close-joke-btn', 'n_clicks'),      
@@ -221,6 +224,9 @@ app.layout = html.Div(id='main-bg-container', style={
 def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current_correct, score, current_question, bg_style, card_style, btn_style, q_box_style, input_style):
     ctx = callback_context
     cfg = THEME_DATA[active_theme]
+    
+    # Extract audio mapping with fallback strings if missing
+    theme_audio = cfg.get("audio", {"correct": "default_correct.mp3", "wrong": "default_wrong.mp3", "click": "default_click.mp3"})
     
     def format_score_text(s):
         pct = int((s['correct'] / s['total']) * 100) if s['total'] > 0 else 0
@@ -244,30 +250,26 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
     triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
 
     if triggered_id == 'close-joke-btn.n_clicks':
-        return current_question, current_correct, "", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, ""
+        return current_question, current_correct, "", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
     if not triggered_id or triggered_id == 'theme-selector.value':
         next_q, next_ans = generate_problem_by_theme(active_theme)
         if cfg.get("images"):
             bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
-        return next_q, next_ans, f" Switched to {active_theme}! Go!", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, ""
+        return next_q, next_ans, f" Switched to {active_theme}! Go!", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
     if user_ans is None:
         reminder = html.Span("Type a number first! 🤔", style={'color': '#E67E22'})
-        return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, ""
+        return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
-    # Process correct/incorrect logic
     is_correct = int(user_ans) == current_correct
     reward_layout = ""
     
     if is_correct:
         feedback = html.Span("✅ Correct! Magnificent job! ✅", style={'color': '#2ECC71'})
         score['correct'] += 1
-        
-        # --- NEW ALTERNATING REWARD LOGIC ---
         reward_type = random.choice(["joke", "gif", "gif"])
         
-        # Safety fallback if a theme doesn't have gifs listed
         if reward_type == "gif" and (not cfg.get("gifs") or len(cfg["gifs"]) == 0):
             reward_type = "joke"
             
@@ -296,8 +298,60 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
     if cfg.get("images"):
         bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
 
-    return next_q, next_ans, feedback, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, is_correct, reward_layout
+    return next_q, next_ans, feedback, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, is_correct, reward_layout, theme_audio
 
 
+
+
+# --- CLIENTSIDE AUDIO TRIGGER ---
+app.clientside_callback(
+    """
+    function(submitClicks, isModalOpen, themeValue, closeClicks, currentQuestion, audioMap) {
+        if (!window.dash_clientside) { window.dash_clientside = {}; }
+        if (!window.dash_clientside.audio) {
+            window.dash_clientside.audio = { prevSubmit: 0, prevClose: 0 };
+        }
+        
+        var audioObj = window.dash_clientside.audio;
+        if (!audioMap || !audioMap.correct) return "";
+
+        var submitDelta = (submitClicks || 0) - audioObj.prevSubmit;
+        var closeDelta = (closeClicks || 0) - audioObj.prevClose;
+
+        audioObj.prevSubmit = submitClicks || 0;
+        audioObj.prevClose = closeClicks || 0;
+
+        var soundFile = "";
+
+        if (submitDelta > 0) {
+            soundFile = isModalOpen ? audioMap.correct : audioMap.wrong;
+        } else if (closeDelta > 0) {
+            soundFile = audioMap.click;
+        }
+
+        if (soundFile) {
+            var audio = new Audio("/assets/" + soundFile);
+            audio.play().catch(function(e) { console.log("Playback error:", e); });
+        }
+
+        return "";
+    }
+    """,
+    output=Output('sound-effects-container', 'className'),
+    inputs=[
+        Input('submit-btn', 'n_clicks'),
+        Input('joke-modal', 'is_open'),
+        Input('theme-selector', 'value'),         
+        Input('close-joke-btn', 'n_clicks')
+    ],      
+    state=[
+        State('question-box', 'children'),
+        State('theme-audio-store', 'data')
+    ],
+    prevent_initial_call=True
+)
+
+            
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=False)
+    
