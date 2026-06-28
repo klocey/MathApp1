@@ -70,128 +70,152 @@ def generate_problem_by_theme(theme_name):
         
     return question, answer
 
+
 # ==========================================
-#              DASH LAYOUT
+#              DASH APP SETUP
 # ==========================================
-# Added mobile viewport meta tag for crisp scaling on smartphones
 app = dash.Dash(
     __name__, 
     external_stylesheets=[dbc.themes.BOOTSTRAP],
+    suppress_callback_exceptions=True,
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1.0"}]
 )
 server = app.server
 
-app.layout = html.Div(id='main-bg-container', style={
-    'fontFamily': '"Comic Sans MS", "Chalkboard SE", sans-serif', 'padding': '15px',
-    'minHeight': '100vh', 'boxSizing': 'border-box', 'display': 'flex', 'flexDirection': 'column',
-    'backgroundSize': 'cover', 'backgroundPosition': 'center', 'transition': 'background-image 0.5s ease-in-out',
-    'backgroundColor': '#FFF0F5', 'justifyContent': 'center', 'alignItems': 'center'
-}, children=[
-    
-    # Modal for Reward (Dad Joke / GIF Popup)
-    dbc.Modal(
-        id="joke-modal",
-        is_open=False,
-        centered=True,
-        children=[
-            dbc.ModalHeader(dbc.ModalTitle("🎉 Great Job! 🎉"), style={'fontFamily': '"Comic Sans MS"', 'color': '#2C3E50'}),
-            dbc.ModalBody(id="joke-modal-body", style={'fontFamily': '"Comic Sans MS"', 'fontSize': '20px', 'textAlign': 'center'}),
-            dbc.ModalFooter(
-                dbc.Button("Next Question! ➡️", id="close-joke-btn", className="ms-auto", n_clicks=0, style={'fontWeight': 'bold', 'borderRadius': '20px'})
-            ),
-        ],
-    ),
+# Set your app password here!
+APP_PASSWORD = "superstarsmath"
 
-    # Responsively wrapping layout structures using Bootstrap containers
-    dbc.Container(style={'maxWidth': '700px', 'width': '100%', 'padding': '0'}, children=[
-        
-        # Upper/Left Theme Control Panel (Fluid width matching smartphone widths perfectly)
+
+# ==========================================
+#             LAYOUT GENERATORS
+# ==========================================
+def login_layout(error_msg=""):
+    return html.Div(style={
+        'height': '100vh', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center',
+        'backgroundColor': '#FFF0F5', 'padding': '20px'
+    }, children=[
         html.Div(style={
-            'width': '100%',         
-            'height': 'fit-content',       
-            'backgroundColor': 'rgba(255, 255, 255, 0.75)', 
-            'borderRadius': '20px',
-            'padding': '15px 20px',              
-            'boxShadow': '0px 8px 16px rgba(0,0,0,0.1)', 
-            'display': 'flex', 
-            'flexDirection': 'column', 
-            'border': '4px solid #ced9e4', 
-            'boxSizing': 'border-box',
-            'marginBottom': '15px'         
+            'backgroundColor': 'white', 'padding': '30px', 'borderRadius': '20px',
+            'boxShadow': '0px 8px 20px rgba(0,0,0,0.15)', 'textAlign': 'center', 'maxWidth': '400px', 'width': '100%'
         }, children=[
-            html.H3("😄 Choose A Theme", style={
-                'color': '#2C3E50', 
-                'marginTop': '0', 
-                'marginBottom': '10px', 
-                'fontSize': '18px',        
-                'textAlign': 'center'
+            html.H2("🔐 Secret Math Lab Room", style={'color': '#FF69B4', 'fontWeight': 'bold', 'fontSize': '24px', 'marginBottom': '20px'}),
+            html.P("Enter the secret code to practice math challenges!", style={'color': '#7F8C8D', 'fontSize': '16px'}),
+            dcc.Input(id='login-password-input', type='password', placeholder='Secret Code...', style={
+                'width': '100%', 'padding': '12px', 'fontSize': '18px', 'borderRadius': '10px',
+                'border': '3px solid #AED6F1', 'textAlign': 'center', 'fontWeight': 'bold', 'marginBottom': '15px'
             }),
-            dcc.Dropdown(
-                id='theme-selector',
-                options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
-                value='Powerpuff Girls',
-                clearable=False,
-                style={
-                    'fontFamily': "Comic Sans MS", 
-                    'fontWeight': 'bold', 
-                    'width': '100%'        
-                }
-            ),
-        ]),
-        
-        # Central Testing Dashboard Card
-        html.Div(id='central-game-card', style={
-            'backgroundColor': 'rgba(255, 255, 255, 0.8)', 
-            'width': '100%', 
-            'borderRadius': '25px', 
-            'padding': '20px 20px', 
-            'boxShadow': '0px 8px 20px rgba(0, 0, 0, 0.2)',
-            'border': '6px solid #AED6F1', 'boxSizing': 'border-box', 'textAlign': 'center'
-        }, children=[
-            html.H1(id='app-title', children="🌟 LAB ROOM! 🌟", style={'color': '#FF69B4', 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}),
-            html.Div(id='app-subtitle', children="Can you solve this challenge?", style={'color': '#5DADE2', 'fontSize': '18px', 'fontWeight': 'bold'}),
-            html.Hr(style={'border': '1px dashed #FFB6C1', 'margin': '15px 0'}),
-            
-            # Action Notification Area
-            html.Div(id='last-action-feedback', style={'fontSize': '16px', 'fontWeight': 'bold', 'minHeight': '30px', 'marginBottom': '10px'}),
+            html.Button('🚀 Open Door!', id='login-btn', n_clicks=0, style={
+                'width': '100%', 'fontSize': '18px', 'backgroundColor': '#5DADE2', 'color': 'white',
+                'border': 'none', 'padding': '12px', 'borderRadius': '50px', 'fontWeight': 'bold', 'cursor': 'pointer'
+            }),
+            html.Div(error_msg, id='login-error-output', style={'color': '#E74C3C', 'fontWeight': 'bold', 'marginTop': '15px', 'fontSize': '14px'})
+        ])
+    ])
 
-            # Target Word/Math Problem Box
-            html.Div(id='question-box', style={
-                'fontSize': '18px', 'fontWeight': 'bold', 'margin': '15px 0', 
-                'minHeight': '60px', 'color': '#2C3E50', 'padding': '12px',
-                'backgroundColor': '#EAFAF1', 'borderRadius': '15px', 'border': '3px solid #2ECC71' 
-            }),
-            
-            # User Interface Blocks wrapped flexibly to stack inputs on tiny phone panels gracefully
-            html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'gap': '10px'}, children=[
-                dcc.Input(id='user-answer', type='number', placeholder='?', style={
-                    'fontSize': '26px', 'width': '110px', 'textAlign': 'center', 'borderRadius': '12px', 
-                    'border': '3px solid #FFB6C1', 'padding': '6px', 'fontWeight': 'bold',
+def game_layout(initial_theme):
+    cfg = THEME_DATA[initial_theme]
+    initial_question, initial_ans = generate_problem_by_theme(initial_theme)
+    
+    bg_style = {
+        'padding': '15px', 'minHeight': '100vh', 'boxSizing': 'border-box', 'display': 'flex', 'flexDirection': 'column',
+        'backgroundSize': 'cover', 'backgroundPosition': 'center', 'transition': 'background-image 0.5s ease-in-out',
+        'backgroundColor': cfg['bg_color'], 'justifyContent': 'center', 'alignItems': 'center'
+    }
+    if cfg.get("images"):
+        bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
+
+    return html.Div(id='main-bg-container', style=bg_style, children=[
+        dbc.Modal(
+            id="joke-modal",
+            is_open=False,
+            centered=True,
+            children=[
+                dbc.ModalHeader(dbc.ModalTitle("🎉 Great Job! 🎉"), style={'fontFamily': '"Comic Sans MS"', 'color': '#2C3E50'}),
+                dbc.ModalBody(id="joke-modal-body", style={'fontFamily': '"Comic Sans MS"', 'fontSize': '20px', 'textAlign': 'center'}),
+                dbc.ModalFooter(
+                    dbc.Button("Next Question! ➡️", id="close-joke-btn", className="ms-auto", n_clicks=0, style={'fontWeight': 'bold', 'borderRadius': '20px'})
+                ),
+            ],
+        ),
+        dbc.Container(style={'maxWidth': '700px', 'width': '100%', 'padding': '0'}, children=[
+            html.Div(style={
+                'width': '100%', 'height': 'fit-content', 'backgroundColor': 'rgba(255, 255, 255, 0.75)', 
+                'borderRadius': '20px', 'padding': '15px 20px', 'boxShadow': '0px 8px 16px rgba(0,0,0,0.1)', 
+                'display': 'flex', 'flexDirection': 'column', 'border': '4px solid #ced9e4', 'boxSizing': 'border-box', 'marginBottom': '15px'         
+            }, children=[
+                html.H3("😄 Choose A Theme", style={'color': '#2C3E50', 'marginTop': '0', 'marginBottom': '10px', 'fontSize': '18px', 'textAlign': 'center'}),
+                dcc.Dropdown(
+                    id='theme-selector',
+                    options=[{'label': t, 'value': t} for t in THEME_DATA.keys()],
+                    value=initial_theme,
+                    clearable=False,
+                    style={'fontFamily': "Comic Sans MS", 'fontWeight': 'bold', 'width': '100%'}
+                ),
+            ]),
+            html.Div(id='central-game-card', style={
+                'backgroundColor': 'rgba(255, 255, 255, 0.8)', 'width': '100%', 'borderRadius': '25px', 'padding': '20px 20px', 
+                'boxShadow': '0px 8px 20px rgba(0, 0, 0, 0.2)', 'border': f"6px solid {cfg['card_border']}", 'boxSizing': 'border-box', 'textAlign': 'center'
+            }, children=[
+                html.H1(id='app-title', children=f"🌟 {initial_theme.upper()} MATH LAB! 🌟", style={'color': cfg['accent_color'], 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}),
+                html.Div(id='app-subtitle', children="Can you solve this challenge?", style={'color': cfg['accent_color'], 'fontSize': '18px', 'fontWeight': 'bold'}),
+                html.Hr(style={'border': '1px dashed #FFB6C1', 'margin': '15px 0'}),
+                html.Div(id='last-action-feedback', children=" Welcome! Go!", style={'fontSize': '16px', 'fontWeight': 'bold', 'minHeight': '30px', 'marginBottom': '10px'}),
+                html.Div(id='question-box', children=initial_question, style={
+                    'fontSize': '18px', 'fontWeight': 'bold', 'margin': '15px 0', 'minHeight': '60px', 'color': '#2C3E50', 'padding': '12px',
+                    'backgroundColor': '#EAFAF1', 'borderRadius': '15px', 'border': f"4px solid {cfg['question_border']}" 
                 }),
-                html.Button('💥 Check Answer!', id='submit-btn', n_clicks=0, style={
-                    'fontSize': '18px', 'color': 'white', 'border': 'none', 'padding': '12px 25px', 
-                    'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold',
+                html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'gap': '10px'}, children=[
+                    dcc.Input(id='user-answer', type='number', placeholder='?', style={
+                        'fontSize': '26px', 'width': '110px', 'textAlign': 'center', 'borderRadius': '12px', 
+                        'border': f"3px solid {cfg['accent_color']}", 'padding': '6px', 'fontWeight': 'bold',
+                    }),
+                    html.Button('💥 Check Answer!', id='submit-btn', n_clicks=0, style={
+                        'fontSize': '18px', 'color': 'white', 'border': 'none', 'padding': '12px 25px', 'borderRadius': '50px', 'fontWeight': 'bold',
+                        'backgroundColor': cfg['accent_color'], 'boxShadow': f"0px 4px 0px {cfg['button_shadow']}"
+                    }),
+                ]),
+                html.Div(id='score-box', children="⭐ Badges: 0 / 0 | Success Rate: 0% ⭐", style={
+                    'fontSize': '16px', 'fontWeight': 'bold', 'marginTop': '20px', 'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '10px', 'borderRadius': '12px'
                 }),
             ]),
-            
-            # Score Tracking Metric Area
-            html.Div(id='score-box', style={
-                'fontSize': '16px', 'fontWeight': 'bold', 'marginTop': '20px', 
-                'color': '#2ECC71', 'backgroundColor': '#F4F6F6', 'padding': '10px', 'borderRadius': '12px'
-            }),
         ]),
-    ]),
-    
-    # Store Engine Hooks
-    dcc.Store(id='correct-answer'),
-    dcc.Store(id='score-tracker', data={'correct': 0, 'total': 0}),
-    dcc.Store(id='theme-audio-store', data={}),
-    html.Div(id='sound-effects-container', style={'display': 'none'}),
-])
+        dcc.Store(id='correct-answer', data=initial_ans),
+        dcc.Store(id='score-tracker', data={'correct': 0, 'total': 0}),
+        dcc.Store(id='theme-audio-store', data=cfg.get("audio", {"correct": "default_correct.mp3", "wrong": "default_wrong.mp3", "click": "default_click.mp3"})),
+        html.Div(id='sound-effects-container', style={'display': 'none'}),
+    ])
+
+
+# Pre-populate the root div directly with the login layout to prevent blank loads
+app.layout = html.Div(
+    id='page-content', 
+    children=login_layout(),
+    style={'minHeight': '100vh', 'fontFamily': '"Comic Sans MS", "Chalkboard SE", sans-serif'}
+)
+
 
 # ==========================================
 #                APP LOGIC
 # ==========================================
+
+# Master router callback managing code-verification and layout swaps
+@app.callback(
+    Output('page-content', 'children'),
+    Input('login-btn', 'n_clicks'),
+    State('login-password-input', 'value'),
+    prevent_initial_call=True
+)
+def application_router(n_clicks, password_entered):
+    if not n_clicks or n_clicks == 0:
+        return login_layout()
+    
+    if password_entered == APP_PASSWORD:
+        first_theme = list(THEME_DATA.keys())[0]
+        return game_layout(first_theme)
+    
+    return login_layout("❌ Incorrect Code! Try again.")
+
+
 @app.callback(
     Output('question-box', 'children'),
     Output('correct-answer', 'data'),
@@ -222,11 +246,17 @@ app.layout = html.Div(id='main-bg-container', style={
     State('submit-btn', 'style'),
     State('question-box', 'style'),
     State('user-answer', 'style'),
-    prevent_initial_call=False
+    prevent_initial_call=True
 )
 def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current_correct, score, current_question, bg_style, card_style, btn_style, q_box_style, input_style):
     ctx = callback_context
     cfg = THEME_DATA[active_theme]
+    
+    bg_style = bg_style or {}
+    card_style = card_style or {}
+    q_box_style = q_box_style or {}
+    input_style = input_style or {}
+    score = score or {'correct': 0, 'total': 0}
     
     theme_audio = cfg.get("audio", {"correct": "default_correct.mp3", "wrong": "default_wrong.mp3", "click": "default_click.mp3"})
     
@@ -249,12 +279,12 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         'boxShadow': f"0px 4px 0px {cfg['button_shadow']}"
     }
 
-    triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
+    triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else ""
 
-    if triggered_id == 'close-joke-btn.n_clicks':
+    if 'close-joke-btn' in triggered_id:
         return current_question, current_correct, "", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
-    if not triggered_id or triggered_id == 'theme-selector.value':
+    if 'theme-selector' in triggered_id:
         next_q, next_ans = generate_problem_by_theme(active_theme)
         if cfg.get("images"):
             bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
@@ -309,12 +339,31 @@ app.clientside_callback(
     function(submitClicks, isModalOpen, themeValue, closeClicks, currentQuestion, audioMap) {
         if (!window.dash_clientside) { window.dash_clientside = {}; }
         if (!window.dash_clientside.audio) {
-            window.dash_clientside.audio = { prevSubmit: 0, prevClose: 0 };
+            window.dash_clientside.audio = { 
+                prevSubmit: 0, 
+                prevClose: 0, 
+                initialized: false 
+            };
+            
+            // Global click fallback listener to instantly unlock audio context on mobile/desktop
+            var unlockAudio = function() {
+                var context = new (window.AudioContext || window.webkitAudioContext)();
+                if (context.state === 'suspended') {
+                    context.resume();
+                }
+                window.dash_clientside.audio.initialized = true;
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            };
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
         }
         
-        var audioObj = window.dash_clientside.audio;
-        if (!audioMap || !audioMap.correct) return "";
+        // SAFETY CHECK: If elements don't exist in the DOM yet or audioMap isn't loaded, 
+        // exit early but leave the global click listeners active.
+        if (submitClicks === undefined || !audioMap || !audioMap.correct) return "";
 
+        var audioObj = window.dash_clientside.audio;
         var submitDelta = (submitClicks || 0) - audioObj.prevSubmit;
         var closeDelta = (closeClicks || 0) - audioObj.prevClose;
 
@@ -331,7 +380,7 @@ app.clientside_callback(
 
         if (soundFile) {
             var audio = new Audio("/assets/" + soundFile);
-            audio.play().catch(function(e) { console.log("Playback error:", e); });
+            audio.play().catch(function(e) { console.log("Playback error managed:", e); });
         }
 
         return "";
@@ -348,9 +397,9 @@ app.clientside_callback(
         State('question-box', 'children'),
         State('theme-audio-store', 'data')
     ],
-    prevent_initial_call=True
+    prevent_initial_call=False # MUST be False so the click hook attaches immediately on layout mount!
 )
-
+            
+            
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8050, debug=False)
-
