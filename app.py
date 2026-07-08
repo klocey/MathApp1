@@ -44,7 +44,7 @@ def generate_problem_by_theme(theme_name):
         answer = num1 - num2
     elif op == "*":
         num1, num2 = random.randint(1, 10), random.randint(0, 10)
-        answer = num1 * num2
+        answer = random.randint(0, 10)
     elif op == "/":
         num2 = random.randint(1, 10)
         answer = random.randint(0, 10)
@@ -250,6 +250,16 @@ def application_router(n_clicks, password_entered):
 )
 def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current_correct, score, current_question, bg_style, card_style, btn_style, q_box_style, input_style):
     ctx = callback_context
+    
+    # --- PREVENT STARTUP DISPATCH CRASHES ---
+    # If this fires during setup when the game layout doesn't exist, raise no_update
+    if not ctx.triggered:
+        return dash.no_update
+        
+    triggered_id = ctx.triggered[0]['prop_id']
+    if triggered_id == '.' or not active_theme:
+        return dash.no_update
+
     cfg = THEME_DATA[active_theme]
     
     bg_style = bg_style or {}
@@ -279,8 +289,6 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         'boxShadow': f"0px 4px 0px {cfg['button_shadow']}"
     }
 
-    triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else ""
-
     if 'close-joke-btn' in triggered_id:
         return current_question, current_correct, "", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
@@ -290,12 +298,18 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
             bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
         return next_q, next_ans, f" Switched to {active_theme}! Go!", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
-    # Intercepts both empty startup strings and empty user inputs safely
+    # Intercept empty submissions safely
     if user_ans is None or str(user_ans).strip() == "":
         reminder = html.Span("Type a number first! 🤔", style={'color': '#E67E22'})
         return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
     
-    is_correct = int(user_ans) == current_correct
+    # Secure computation block
+    try:
+        is_correct = int(user_ans) == current_correct
+    except (ValueError, TypeError):
+        reminder = html.Span("Type a valid number! 🤔", style={'color': '#E67E22'})
+        return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
+
     reward_layout = ""
     
     if is_correct:
@@ -346,7 +360,6 @@ app.clientside_callback(
                 initialized: false 
             };
             
-            // Global click fallback listener to instantly unlock audio context on mobile/desktop
             var unlockAudio = function() {
                 var context = new (window.AudioContext || window.webkitAudioContext)();
                 if (context.state === 'suspended') {
@@ -360,8 +373,6 @@ app.clientside_callback(
             document.addEventListener('touchstart', unlockAudio);
         }
         
-        // SAFETY CHECK: If elements don't exist in the DOM yet or audioMap isn't loaded, 
-        // exit early but leave the global click listeners active.
         if (submitClicks === undefined || !audioMap || !audioMap.correct) return "";
 
         var audioObj = window.dash_clientside.audio;
@@ -398,7 +409,7 @@ app.clientside_callback(
         State('question-box', 'children'),
         State('theme-audio-store', 'data')
     ],
-    prevent_initial_call=False # MUST be False so the click hook attaches immediately on layout mount!
+    prevent_initial_call=False
 )
             
             
