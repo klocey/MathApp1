@@ -1,4 +1,93 @@
 THEME_DATA = {
+    
+        "Garfield": {
+        # --- Visual Colors (Cozy Orange & Lasagna Tones) ---
+        "bg_color": "#FF7F32",          # Vibrant Garfield Orange
+        "card_border": "#2A75D3",       # Jon Arbuckle's Classic Blue Shirt
+        "question_border": "#CC4E00",   # Deep burnt orange
+        "accent_color": "#FF9900",      # Bright cheesy yellow-orange
+        "button_shadow": "#B33600",     # Dark shadow tint
+        
+        # --- Asset Path Routing ---
+        "images": [
+            "garfield/1.webp", 
+            "garfield/2.webp",
+            "garfield/3.avif",
+            "garfield/4.webp",
+            "garfield/5.avif",
+            "garfield/6.avif",
+            "garfield/7.webp",
+            "garfield/8.jpg",
+            "garfield/9.webp",
+            "garfield/10.avif",
+            "garfield/11.webp",
+            "garfield/12.jpg",
+            "garfield/13.png",
+            "garfield/14.webp",
+            "garfield/15.jpg",
+            "garfield/16.jpg",
+        ],
+        "gifs": [
+            "garfield/1.gif", 
+            "garfield/2.gif",
+            "garfield/3.gif",
+            "garfield/4.gif",
+            "garfield/5.gif",
+            "garfield/6.gif",
+            "garfield/7.gif",
+            "garfield/8.gif",
+            "garfield/9.gif",
+            "garfield/10.gif",
+            "garfield/11.gif",
+            "garfield/12.gif",
+            "garfield/13.gif",
+            "garfield/14.gif",
+            "garfield/15.gif",
+            "garfield/16.gif",
+            "garfield/17.gif",
+            "garfield/18.gif",
+            "garfield/19.gif",
+            "garfield/20.gif",
+            "garfield/21.gif",
+            "garfield/22.gif",
+            "garfield/23.gif",
+            "garfield/24.gif",
+            "garfield/25.gif",
+            "garfield/26.gif",
+            "garfield/27.gif",
+            
+        ],
+        "audio": {
+            "correct": "garfield/correct.mp3", 
+            "wrong": "garfield/wrong.mp3", 
+            "click": "garfield/click.mp3"
+        },
+        
+        # --- Word Problem Variables ---
+        "characters": ["Garfield", "Odie", "Jon", "Nermal", "Pookie", "Arlene"],
+        "items": ["pans of lasagna", "slices of pepperoni pizza", "donuts", "alarm clocks", "cups of coffee", "balls of yarn"],
+        
+        # --- Word Problem Templates ---
+        "templates": {
+            "+": [
+                "{name} ate {num1} {item} for breakfast, and then sneaked another {num2} {item} from the counter. How many total did {name} eat? 😋",
+                "{name} found {num1} {item} hidden under the couch. {friend} brought over {num2} more {item}. How many do they have altogether?"
+            ],
+            "-": [
+                "Jon baked {num1} {item}. While he wasn't looking, {name} gobbled up {num2} of them! How many {item} are left for Jon? 😼",
+                "{name} had {num1} {item}. {friend} accidentally knocked {num2} of them out the window. How many are left?"
+            ],
+            "*": [
+                "{name} wants to eat {num1} {item} every single hour for {num2} hours straight. How many total {item} will that take?",
+                "Jon bought {num1} boxes of {item}. If each box contains exactly {num2}, how many total {item} did Jon buy?"
+            ],
+            "/": [
+                "{name} has {num1} {item} and wants to split them equally over {num2} lazy naps today. How many {item} does he get per nap? 💤",
+                "Jon has {num1} {item} to divide evenly among {num2} pets. How many {item} does each pet get?"
+            ]
+        }
+    },
+    
     "K-Pop DH": {
         "bg_color": "#ce7bdc",        # Light pink blossom aura
         "card_border": "#31469e",    # Bubbles Blue
