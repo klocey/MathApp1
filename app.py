@@ -7,7 +7,9 @@ import dash_bootstrap_components as dbc
 # Import the massive theme library dictionary from our local file
 from themes import THEME_DATA
 
-# --- DAD JOKES LOADING ENGINE ---
+# ==========================================
+#      DAD JOKES LOADING ENGINE
+# ==========================================
 DEFAULT_JOKES = [
     ("Why did the cookie go to the hospital?", "Because it felt crummy!"),
     ("What do you call a sleeping dinosaur?", "A dino-snore!")
@@ -29,7 +31,9 @@ def load_dad_jokes():
 DAD_JOKES = load_dad_jokes()
 
 
-# --- HELPER LOGIC TO GENERATE PROBLEMS ---
+# ==========================================
+#      HELPER LOGIC TO GENERATE PROBLEMS
+# ==========================================
 def generate_problem_by_theme(theme_name):
     cfg = THEME_DATA[theme_name]
     op = random.choice(["+", "-", "*", "/"])
@@ -44,7 +48,7 @@ def generate_problem_by_theme(theme_name):
         answer = num1 - num2
     elif op == "*":
         num1, num2 = random.randint(1, 10), random.randint(0, 10)
-        answer = random.randint(0, 10)
+        answer = num1 * num2
     elif op == "/":
         num2 = random.randint(1, 10)
         answer = random.randint(0, 10)
@@ -72,7 +76,7 @@ def generate_problem_by_theme(theme_name):
 
 
 # ==========================================
-#              DASH APP SETUP
+#             DASH APP SETUP
 # ==========================================
 app = dash.Dash(
     __name__, 
@@ -185,8 +189,7 @@ def game_layout(initial_theme):
         html.Div(id='sound-effects-container', style={'display': 'none'}),
     ])
 
-
-# Pre-populate the root div directly with the login layout to prevent blank loads
+# Pre-populate the root div
 app.layout = html.Div(
     id='page-content', 
     children=login_layout(),
@@ -198,7 +201,6 @@ app.layout = html.Div(
 #                APP LOGIC
 # ==========================================
 
-# Master router callback managing code-verification and layout swaps
 @app.callback(
     Output('page-content', 'children'),
     Input('login-btn', 'n_clicks'),
@@ -208,11 +210,8 @@ app.layout = html.Div(
 def application_router(n_clicks, password_entered):
     if not n_clicks or n_clicks == 0:
         return login_layout()
-    
     if password_entered == APP_PASSWORD:
-        first_theme = list(THEME_DATA.keys())[0]
-        return game_layout(first_theme)
-    
+        return game_layout(list(THEME_DATA.keys())[0])
     return login_layout("❌ Incorrect Code! Try again.")
 
 
@@ -231,8 +230,8 @@ def application_router(n_clicks, password_entered):
     Output('submit-btn', 'style'),
     Output('question-box', 'style'),
     Output('user-answer', 'style'),
-    Output('joke-modal', 'is_open'),          
-    Output('joke-modal-body', 'children'),    
+    Output('joke-modal', 'is_open'),
+    Output('joke-modal-body', 'children'),
     Output('theme-audio-store', 'data'),
     Input('submit-btn', 'n_clicks'),
     Input('theme-selector', 'value'),
@@ -251,17 +250,15 @@ def application_router(n_clicks, password_entered):
 def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current_correct, score, current_question, bg_style, card_style, btn_style, q_box_style, input_style):
     ctx = callback_context
     
-    # --- PREVENT STARTUP DISPATCH CRASHES ---
-    # If this fires during setup when the game layout doesn't exist, raise no_update
+    # 1. Early Exits for Dashboard Initialization
     if not ctx.triggered:
         return dash.no_update
-        
     triggered_id = ctx.triggered[0]['prop_id']
     if triggered_id == '.' or not active_theme:
         return dash.no_update
 
+    # 2. Establish Default State Variables (DRY Principle)
     cfg = THEME_DATA[active_theme]
-    
     bg_style = bg_style or {}
     card_style = card_style or {}
     q_box_style = q_box_style or {}
@@ -274,78 +271,89 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
         pct = int((s['correct'] / s['total']) * 100) if s['total'] > 0 else 0
         return f"⭐ Badges: {s['correct']} / {s['total']} | Success Rate: {pct}% ⭐"
 
-    title_text = f"🌟 {active_theme.upper()} MATH LAB! 🌟"
-    title_style = {'color': cfg['accent_color'], 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}
-    subtitle_style = {'color': cfg['accent_color'], 'fontSize': '18px', 'fontWeight': 'bold'}
-    
+    # Core UI defaults pulled straight from the theme
     bg_style['backgroundColor'] = cfg['bg_color']
     card_style['border'] = f"6px solid {cfg['card_border']}"
     q_box_style['border'] = f"4px solid {cfg['question_border']}"
     input_style['border'] = f"3px solid {cfg['accent_color']}"
     
+    title_text = f"🌟 {active_theme.upper()} MATH LAB! 🌟"
+    title_style = {'color': cfg['accent_color'], 'fontSize': '24px', 'fontWeight': 'bold', 'margin': '0 0 5px 0'}
+    subtitle_style = {'color': cfg['accent_color'], 'fontSize': '18px', 'fontWeight': 'bold'}
     new_btn_style = {
         'fontSize': '18px', 'backgroundColor': cfg['accent_color'], 'color': 'white', 'border': 'none', 
         'padding': '12px 25px', 'borderRadius': '50px', 'cursor': 'pointer', 'fontWeight': 'bold', 
         'boxShadow': f"0px 4px 0px {cfg['button_shadow']}"
     }
 
-    if 'close-joke-btn' in triggered_id:
-        return current_question, current_correct, "", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
+    # Set up mutable return variables
+    ret_q = current_question
+    ret_ans = current_correct
+    ret_feedback = ""
+    ret_modal_open = False
+    ret_modal_body = ""
 
-    if 'theme-selector' in triggered_id:
-        next_q, next_ans = generate_problem_by_theme(active_theme)
+    # 3. Handle Actions (Modify mutables instead of duplicating returns)
+    if 'close-joke-btn' in triggered_id:
+        pass # Mutables are already perfectly set up for this exit
+
+    elif 'theme-selector' in triggered_id:
+        ret_q, ret_ans = generate_problem_by_theme(active_theme)
         if cfg.get("images"):
             bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
-        return next_q, next_ans, f" Switched to {active_theme}! Go!", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
+        ret_feedback = f" Switched to {active_theme}! Go!"
 
-    # Intercept empty submissions safely
-    if user_ans is None or str(user_ans).strip() == "":
-        reminder = html.Span("Type a number first! 🤔", style={'color': '#E67E22'})
-        return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
-    
-    # Secure computation block
-    try:
-        is_correct = int(user_ans) == current_correct
-    except (ValueError, TypeError):
-        reminder = html.Span("Type a valid number! 🤔", style={'color': '#E67E22'})
-        return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
-
-    reward_layout = ""
-    
-    if is_correct:
-        feedback = html.Span("✅ Correct! Magnificent job! ✅", style={'color': '#2ECC71'})
-        score['correct'] += 1
-        reward_type = random.choice(["joke", "gif", "gif"])
-        
-        if reward_type == "gif" and (not cfg.get("gifs") or len(cfg["gifs"]) == 0):
-            reward_type = "joke"
-            
-        if reward_type == "joke":
-            joke_setup, joke_punchline = random.choice(DAD_JOKES)
-            reward_layout = html.Div([
-                html.P(f"👉 {joke_setup}", style={'fontWeight': 'bold', 'fontSize': '20px'}),
-                html.Br(),
-                html.P(f"✨ {joke_punchline} ✨", style={'color': '#E74C3C', 'fontWeight': 'bold', 'fontSize': '22px'})
-            ])
-        else:
-            chosen_gif = random.choice(cfg["gifs"])
-            reward_layout = html.Div([
-                html.P("🎉 Virtual High Five! 🎉", style={'fontWeight': 'bold', 'marginBottom': '15px'}),
-                html.Img(
-                    src=f"/assets/{chosen_gif}", 
-                    style={'maxWidth': '100%', 'maxHeight': '250px', 'borderRadius': '15px', 'boxShadow': '0px 4px 10px rgba(0,0,0,0.15)'}
-                )
-            ])
     else:
-        feedback = html.Span(f"❌ Close! The right answer was {current_correct}.", style={'color': '#E74C3C'})
-    
-    score['total'] += 1
+        # It's a submit action. Check for empty strings first.
+        if user_ans is None or str(user_ans).strip() == "":
+            ret_feedback = html.Span("Type a number first! 🤔", style={'color': '#E67E22'})
+        else:
+            try:
+                is_correct = int(user_ans) == current_correct
+                
+                # Math Processing Block
+                if is_correct:
+                    ret_feedback = html.Span("✅ Correct! Magnificent job! ✅", style={'color': '#2ECC71'})
+                    score['correct'] += 1
+                    
+                    # Reward Generation
+                    reward_type = random.choice(["joke", "gif", "gif"])
+                    if reward_type == "gif" and (not cfg.get("gifs") or len(cfg["gifs"]) == 0):
+                        reward_type = "joke"
+                        
+                    if reward_type == "joke":
+                        joke_setup, joke_punchline = random.choice(DAD_JOKES)
+                        ret_modal_body = html.Div([
+                            html.P(f"👉 {joke_setup}", style={'fontWeight': 'bold', 'fontSize': '20px'}),
+                            html.Br(),
+                            html.P(f"✨ {joke_punchline} ✨", style={'color': '#E74C3C', 'fontWeight': 'bold', 'fontSize': '22px'})
+                        ])
+                    else:
+                        chosen_gif = random.choice(cfg["gifs"])
+                        ret_modal_body = html.Div([
+                            html.P("🎉 Virtual High Five! 🎉", style={'fontWeight': 'bold', 'marginBottom': '15px'}),
+                            html.Img(src=f"/assets/{chosen_gif}", style={'maxWidth': '100%', 'maxHeight': '250px', 'borderRadius': '15px', 'boxShadow': '0px 4px 10px rgba(0,0,0,0.15)'})
+                        ])
+                    ret_modal_open = True
+                else:
+                    ret_feedback = html.Span(f"❌ Close! The right answer was {current_correct}.", style={'color': '#E74C3C'})
+                
+                score['total'] += 1
+                
+                # Generate next question
+                ret_q, ret_ans = generate_problem_by_theme(active_theme)
+                if cfg.get("images"):
+                    bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
+                    
+            except (ValueError, TypeError):
+                ret_feedback = html.Span("Type a valid number! 🤔", style={'color': '#E67E22'})
 
-    next_q, next_ans = generate_problem_by_theme(active_theme)
-    if cfg.get("images"):
-        bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
-
-    return next_q, next_ans, feedback, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, is_correct, reward_layout, theme_audio
+    # 4. SINGLE UNIFIED RETURN (Saves you from future bugs)
+    return (
+        ret_q, ret_ans, ret_feedback, score, format_score_text(score), "", bg_style, card_style, 
+        title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, 
+        ret_modal_open, ret_modal_body, theme_audio
+    )
 
 
 # --- CLIENTSIDE AUDIO TRIGGER ---
@@ -411,7 +419,6 @@ app.clientside_callback(
     ],
     prevent_initial_call=False
 )
-            
-            
+           
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8050, debug=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)), debug=False)
