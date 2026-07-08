@@ -290,10 +290,11 @@ def run_themed_game(submit_clicks, active_theme, close_clicks, user_ans, current
             bg_style['backgroundImage'] = f"url('/assets/{random.choice(cfg['images'])}')"
         return next_q, next_ans, f" Switched to {active_theme}! Go!", score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
 
-    if user_ans is None:
+    # Intercepts both empty startup strings and empty user inputs safely
+    if user_ans is None or str(user_ans).strip() == "":
         reminder = html.Span("Type a number first! 🤔", style={'color': '#E67E22'})
         return current_question, current_correct, reminder, score, format_score_text(score), "", bg_style, card_style, title_text, title_style, subtitle_style, new_btn_style, q_box_style, input_style, False, "", theme_audio
-
+    
     is_correct = int(user_ans) == current_correct
     reward_layout = ""
     
