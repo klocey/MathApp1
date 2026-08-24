@@ -66,19 +66,20 @@ THEME_DATA = {
         # --- Word Problem Variables ---
         "characters": ["Garfield", "Odie", "Jon", "Nermal", "Pookie", "Arlene"],
         "items": ["pans of lasagna", "slices of pepperoni pizza", "donuts", "alarm clocks", "cups of coffee", "balls of yarn"],
+        "items_edible": ["pans of lasagna", "slices of pepperoni pizza", "donuts", "cups of coffee"],
         
         # --- Word Problem Templates ---
         "templates": {
             "+": [
-                "{name} ate {num1} {item} for breakfast, and then sneaked another {num2} {item} from the counter. How many total did {name} eat? 😋",
+                "EDIBLE::{name} ate {num1} {item} for breakfast, and then sneaked another {num2} {item} from the counter. How many total did {name} eat? 😋",
                 "{name} found {num1} {item} hidden under the couch. {friend} brought over {num2} more {item}. How many do they have altogether?"
             ],
             "-": [
-                "Jon baked {num1} {item}. While he wasn't looking, {name} gobbled up {num2} of them! How many {item} are left for Jon? 😼",
+                "EDIBLE::{friend} baked {num1} {item}. While {friend} wasn't looking, {name} gobbled up {num2} of them! How many {item} are left for {friend}? 😼",
                 "{name} had {num1} {item}. {friend} accidentally knocked {num2} of them out the window. How many are left?"
             ],
             "*": [
-                "{name} wants to eat {num1} {item} every single hour for {num2} hours straight. How many total {item} will that take?",
+                "EDIBLE::{name} wants to eat {num1} {item} every single hour for {num2} hours straight. How many total {item} will that take?",
                 "Jon bought {num1} boxes of {item}. If each box contains exactly {num2}, how many total {item} did Jon buy?"
             ],
             "/": [
@@ -237,6 +238,7 @@ THEME_DATA = {
         "question_border": "#2ECC71",# Buttercup Green
         "characters": ["Blossom", "Bubbles", "Buttercup", "Mojo Jojo", "Fuzzy Lumpkins", "Professor Utonium"],
         "items": ["Chemical X drops", "star stickers", "sweet cupcakes", "unbreakable hearts", "jars of jam"],
+        "items_edible": ["sweet cupcakes", "jars of jam"],
         "audio": {
             "correct": "powerpuff/correct.mp3",
             "wrong": "powerpuff/wrong.mp3",
@@ -347,6 +349,7 @@ THEME_DATA = {
         "question_border": "#3498DB",# Great Ball Blue
         "characters": ["Pikachu", "Eevee", "Mew", "Ash Ketchum", "Charizard", "Snorlax"],
         "items": ["Pokéballs", "Razz Berries", "Gym Badges", "Shiny Stones", "Potions"],
+        "items_edible": ["Razz Berries"],
         "audio": {
             "correct": "pokemon/correct.mp3",
             "wrong": "pokemon/wrong.mp3",
@@ -485,6 +488,7 @@ THEME_DATA = {
         "question_border": "#BB8FCE",# LSP Lumpy Purple
         "characters": ["Finn", "Jake", "Princess Bubblegum", "Marceline", "BMO", "Ice King"],
         "items": ["swords", "bacon pancakes", "Candy Kingdom gems", "ancient artifacts", "apples"],
+        "items_edible": ["bacon pancakes", "apples"],
         "audio": {
             "correct": "adventuretime/correct.mp3",
             "wrong": "adventuretime/wrong.mp3",

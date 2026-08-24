@@ -61,10 +61,23 @@ def generate_problem_by_theme(theme_name):
         friend = random.choice(char_pool)
         
         template = random.choice(cfg["templates"][op])
+
+        # Some templates require an item that can plausibly be eaten (e.g. "ate", "baked").
+        # Those templates are tagged with an "EDIBLE::" prefix in themes.py. When present,
+        # draw only from the theme's edible-item pool so we never get nonsensical pairings
+        # like "Jon baked 11 alarm clocks."
+        requires_edible = template.startswith("EDIBLE::")
+        if requires_edible:
+            template = template[len("EDIBLE::"):]
+
+        item_pool = cfg.get("items_edible") if requires_edible else None
+        if not item_pool:
+            item_pool = cfg["items"]
+
         question = template.format(
             name=name,
             friend=friend,
-            item=random.choice(cfg["items"]),
+            item=random.choice(item_pool),
             num1=num1,
             num2=num2
         )
