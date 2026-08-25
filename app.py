@@ -62,15 +62,22 @@ def generate_problem_by_theme(theme_name):
         
         template = random.choice(cfg["templates"][op])
 
-        # Some templates require an item that can plausibly be eaten (e.g. "ate", "baked").
-        # Those templates are tagged with an "EDIBLE::" prefix in themes.py. When present,
-        # draw only from the theme's edible-item pool so we never get nonsensical pairings
-        # like "Jon baked 11 alarm clocks."
-        requires_edible = template.startswith("EDIBLE::")
-        if requires_edible:
-            template = template[len("EDIBLE::"):]
+        # Some templates require an item from a specific real-world category (e.g. "ate"/"eat"
+        # needs anything edible; "baked" needs something you can actually bake, not a drink).
+        # Templates are tagged with a category prefix in themes.py; strip it and draw from the
+        # matching pool so we never get nonsensical pairings like "Jon baked 44 cups of coffee."
+        item_category = None
+        for tag in ("BAKEABLE::", "EDIBLE::"):
+            if template.startswith(tag):
+                item_category = tag[:-2]  # e.g. "BAKEABLE"
+                template = template[len(tag):]
+                break
 
-        item_pool = cfg.get("items_edible") if requires_edible else None
+        item_pool = None
+        if item_category == "BAKEABLE":
+            item_pool = cfg.get("items_bakeable") or cfg.get("items_edible")
+        elif item_category == "EDIBLE":
+            item_pool = cfg.get("items_edible")
         if not item_pool:
             item_pool = cfg["items"]
 

@@ -67,6 +67,7 @@ THEME_DATA = {
         "characters": ["Garfield", "Odie", "Jon", "Nermal", "Pookie", "Arlene"],
         "items": ["pans of lasagna", "slices of pepperoni pizza", "donuts", "alarm clocks", "cups of coffee", "balls of yarn"],
         "items_edible": ["pans of lasagna", "slices of pepperoni pizza", "donuts", "cups of coffee"],
+        "items_bakeable": ["pans of lasagna", "slices of pepperoni pizza", "donuts"],
         
         # --- Word Problem Templates ---
         "templates": {
@@ -75,7 +76,7 @@ THEME_DATA = {
                 "{name} found {num1} {item} hidden under the couch. {friend} brought over {num2} more {item}. How many do they have altogether?"
             ],
             "-": [
-                "EDIBLE::{friend} baked {num1} {item}. While {friend} wasn't looking, {name} gobbled up {num2} of them! How many {item} are left for {friend}? 😼",
+                "BAKEABLE::{friend} baked {num1} {item}. While {friend} wasn't looking, {name} gobbled up {num2} of them! How many {item} are left for {friend}? 😼",
                 "{name} had {num1} {item}. {friend} accidentally knocked {num2} of them out the window. How many are left?"
             ],
             "*": [
